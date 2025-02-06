@@ -1,5 +1,6 @@
 import { useState } from "react";
 import AnswersList from "./AnswersList";
+import { scryRenderedComponentsWithType } from "react-dom/test-utils";
 
 function Survey() {
   const [open, setOpen] = useState(false); //Ignore this state
@@ -15,32 +16,22 @@ function Survey() {
   const handleInputChange = (event) => {
     const name = event.name;
     const inputValue = event.value;
+    const checked = event.checked;
     
     if (name === "color") {
       setAnswers({...answers, color: inputValue});
     } else if (name === "spend-time") {
-      setAnswers({...answers, spendTime: inputValue});
+      if (checked) {
+        setAnswers({...answers, spendTime: [...answers.spendTime, inputValue]});
+      } else {
+        setAnswers({...answers, spendTime: answers.spendTime.filter((item) => item !== inputValue)});
+      }
     } else if(name === "review") {
       setAnswers({...answers, review: inputValue});
     } else if (name === "username") {
       setAnswers({...answers, username: inputValue});
     } else if (name === "email") {  
       setAnswers({...answers, email: inputValue});
-    }
-  }
-
-  const handleCheckboxChange = (event) => {
-    const name = event.name;
-    const inputValue = event.value;
-    const inputType = event.type;
-    const checked = event.checked;
-
-    if (inputType === "checkbox" && name === "spend-time") {
-      if (checked) {
-        setAnswers({...answers, spendTime: [...answers.spendTime, inputValue]});
-      } else {
-        setAnswers({...answers, spendTime: answers.spendTime.filter((item) => item !== inputValue)});
-      }
     }
   }
 
@@ -90,7 +81,7 @@ function Survey() {
           </div>
           <div className="form__group">
             <h3>How do you like to spend time with your rubber duck</h3>
-              <ul onChange={(e) => handleCheckboxChange(e.target)}>
+              <ul onChange={(e) => handleInputChange(e.target)}>
                 <li>
                   <label
                     ><input
